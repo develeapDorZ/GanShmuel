@@ -25,7 +25,8 @@ def perform_billing_test():
                 "name": test['reason'],
                 "result": "Successfull!"
             })
-
+    for result in results:
+        print(f'{result["name"]}: {result["result"]}')
     print(f'Failed {count}/{len(data)} Tests')
     return count
     

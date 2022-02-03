@@ -11,10 +11,10 @@ def test():
     
     dirname = path.dirname(__file__)
     filename = path.join(dirname,"tests.json")
-    
+    connectionFailed=False
     with open(filename) as f:
         tests = json.load(f)
-
+    count=0
     for test in tests:
         try:
             api = test['api']
@@ -24,24 +24,32 @@ def test():
             response_type = test['response_type']
             request_type = test['request_type']
             res = None
+            count += 1
+            if connectionFailed:
+                test_results.append({"status":"err","reason":f'{reason} failed(Database not connected)'})
+            else:
 
-            if request_type == "GET":
-                res = requests.get(f'{URL}/{api}',(None if parameters == "None" else parameters))
-            elif request_type == "POST":
-                res = requests.post(f'{URL}/{api}',(None if parameters == "None" else parameters))
-            elif request_type == "PUT":
-                res = requests.put(f'{URL}/{api}',(None if parameters == "None" else parameters))
+                if request_type == "GET":
+                    res = requests.get(f'{URL}/{api}',(None if parameters == "None" else parameters))
+                elif request_type == "POST":
+                    res = requests.post(f'{URL}/{api}',(None if parameters == "None" else parameters))
+                elif request_type == "PUT":
+                    res = requests.put(f'{URL}/{api}',(None if parameters == "None" else parameters))
             
-            if response_type == "status_code":
-                if res != None and res.status_code == result:
-                    test_results.append({"status":"ok","reason":f'{reason} success'})
-                else:
-                    test_results.append({"status":"err","reason":f'{reason} failed'})
-            elif response_type == "body_response":
-                if res != None and res.content.decode("utf-8") == result:
-                    test_results.append({"status":"ok","reason":f'{reason} success'})
-                else:
-                    test_results.append({"status":"err","reason":f'{reason} failed'})
+                if response_type == "status_code":
+                    if res != None and res.status_code == result:
+                        test_results.append({"status":"ok","reason":f'{reason} success'})
+                    else:
+                        test_results.append({"status":"err","reason":f'{reason} failed'})
+                        if count == 2:
+                            connectionFailed=True
+                elif response_type == "body_response":
+                    if res != None and res.content.decode("utf-8") == result:
+                        test_results.append({"status":"ok","reason":f'{reason} success'})
+                    else:
+                        test_results.append({"status":"err","reason":f'{reason} failed'})
+                        if count == 2:
+                            connectionFailed=True
         except:
             test_results.append({"status":"err","reason":f'{reason} failed'})
 
