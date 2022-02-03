@@ -8,7 +8,7 @@ from unittest import case
 # from constants import mailAddress, password
 
 mailAddress='develeap-project@yandex.com'          #'devops.yellow.develeap@gmail.com' #'dorzvulundeveleapbluedevops@gmail.com' # 'devopsteam.ganshmuel@gmail.com' # 'devops.yellow.develeap@gmail.com' #'devopsteam.ganshmuel@gmail.com' #
-password='develeap*#'             #'devops.yellow' # '13578642' #'devops.yellow'  # 'green_devops' #
+password='develeap'             #'devops.yellow' # '13578642' #'devops.yellow'  # 'green_devops' #
 
 
 # create 3 mailing lists - DevOps only, Billing+DevOps, Weight+DevOps
