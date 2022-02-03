@@ -25,15 +25,6 @@
     },
 
 
-
-
-
-
-
-
-
-
-
     {
         "api": "provider/10012",
         "request_type": "PUT",
@@ -68,35 +59,12 @@
     },
 
 
-
-
-
-
-
-
-
-    {
-        "api": "rates",
-        "request_type": "POST",
-        "response_type": "status_code",
-        "parameters": "rates.xlsx",
-        "result": 201,
-        "description": "Uploading rates"
-    },
-
-
-
-
-
-
-
-
     {
         "api": "truck",
         "request_type": "POST",
         "response_type": "status_code",
-        "parameters": {"id":"33-999-51","provider_id":"10012"},
-        "result": 200,
+        "parameters": {"id":"33-999-51","provider":"10012"},
+        "result": 201,
         "description": "Inserting Truck"
     },
 

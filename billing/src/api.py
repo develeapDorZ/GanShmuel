@@ -9,7 +9,7 @@ import mysql.connector
 import requests
 import xlwt
 import io
-# import tests
+from datetime import datetime
 
 class LOG_TYPE(Enum):
     INFO=0
@@ -26,8 +26,9 @@ type_desc = ["[INFO]","[ERROR]","[WARNING]"]
 
 
 def LOG(str,TYPE):
+    datObj = datetime.now()
     with open("log","a+") as f:
-        f.write(f'{type_desc[TYPE.value]} {str}\n')
+        f.write(f'[{datObj}] {type_desc[TYPE.value]} {str}\n')
 
 
 def connect():
@@ -36,7 +37,7 @@ def connect():
     
     try:
         mydb = mysql.connector.connect(
-            host="billingDB",
+            host="billing_db",
             user="root",
             password="catty",
             database="billdb",
@@ -141,8 +142,13 @@ def Update_provider(id):
 def rates():
    data = request.form
    rates = xlsx_to_array("/in",data['filename'])
+   
    db = connect()
+   if db == None:
+       return "BAD",404
+
    mycursor = db.cursor()
+   LOG("Updating Rates database...",LOG_TYPE.INFO)
    for row in rates:
     sql = 'SELECT * FROM Rates WHERE product_id = %s AND scope = %s'
     val = (row[0].value,row[2].value)
@@ -158,20 +164,24 @@ def rates():
                 'scope':row[2].value}
     mycursor.execute(sql, val)
     db.commit()
+    LOG("Rates database Updated!")
     db.close()
 
-    return "OK",201
+    return "OK",200
 
 @app.route('/rates',methods=['GET'])
 def Download_RatesXL():
     db = connect()
     if db == None:
         return "BAD"
+    
+    LOG("Fetching data from Rates...",LOG_TYPE.INFO)
 
     mycursor = db.cursor()
     mycursor.execute('SELECT * FROM Rates')
     myresult = mycursor.fetchall()
 
+    LOG("Creating XL file from the Rates table",LOG_TYPE.INFO)
     #output in bytes
     output = io.BytesIO()
     #create WorkBook object
@@ -192,7 +202,9 @@ def Download_RatesXL():
         idx += 1
 
     workbook.save(output)
-    output.seek(0) 
+    output.seek(0)
+
+    LOG("Sending rates file to requester",LOG_TYPE.INFO)
 
     return Response(output, mimetype="application/ms-excel", headers={"Content-Disposition":"attachment;filename=rates-new.xls"}) 
 
@@ -214,7 +226,7 @@ def Insert_truck():
 
         LOG("Inserted new record into Trucks table successfully!",LOG_TYPE.INFO)
 
-        return "OK",201
+        return "OK",201 
     except:
         LOG("Failed to insert new record into Trucks table",LOG_TYPE.ERROR)
         pass
@@ -222,7 +234,7 @@ def Insert_truck():
         LOG("Closing connection to database...",LOG_TYPE.INFO)
         db.close()
 
-    return "BAD"
+    return "BAD",404
 
 @app.route("/truck/<id>",methods=['PUT'])
 def Update_ProviderID(id):
@@ -279,7 +291,7 @@ def Get_Truck(id):
     if len(results) == 0: #Empty means we don't have a truck with this license plate
         return 404
     
-    return requests.get('http://localhost:5000/item',{'t1':'','t2':''}).content
+    return requests.get('http://localhost:5000/item',{'from':'','to':''}).content
 
 @app.route("/weight",methods=['GET'])
 def Get_Weight():
@@ -294,13 +306,13 @@ def Get_Bill(id):
     if connection == None:
         return "BAD"
     
-    name = "ad"
+    name = ""
     date_from = request.args.get("from")
     date_to = request.args.get("to")
     truckCount=0
     total=0
 
-    LOG(f'Parameter 1: {date_from} Parameter 2: {date_to}',LOG_TYPE.INFO)
+    LOG(f'Getting Bill...',LOG_TYPE.INFO)
 
     mycursor = connection.cursor()
     
