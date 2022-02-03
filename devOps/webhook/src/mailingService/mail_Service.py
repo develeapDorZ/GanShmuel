@@ -26,12 +26,13 @@ def _readTemplate(filename):
         template_file_content = template_file.read()
     return Template(template_file_content)    
 
-s = smtplib.SMTP(host='smtp.yandex.ru', port=465)
-s.starttls()
-s.login(mailAddress,password)
+# s = smtplib.SMTP(host='smtp.yandex.ru', port=465)
+# s.starttls()
+# s.login(mailAddress,password)
     
 
 def mailNotification(proc, team, status): #proc = build/deploy, team = mailinglist, status = success/fail
+    return
     # return #because we killed 2 gmails
     message_template = []
     names = []
