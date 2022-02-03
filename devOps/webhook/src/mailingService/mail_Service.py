@@ -26,7 +26,7 @@ def _readTemplate(filename):
         template_file_content = template_file.read()
     return Template(template_file_content)    
 
-s = smtplib.SMTP(host='smtp.gmail.com', port=587)
+s = smtplib.SMTP(host='smtp.yandex.ru', port=465)
 s.starttls()
 s.login(mailAddress,password)
     
