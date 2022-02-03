@@ -12,7 +12,7 @@ def index():
     return render_template("index.html")
 
 @app.route('/health',methods=['GET'])
-def index():
+def health():
     return "OK"
 
 # @app.route('/monitoring', methods=['GET'])
